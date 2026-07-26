@@ -1,6 +1,8 @@
 package com.rolexnetwork.staff;
 
 import com.rolexnetwork.staff.commands.StaffCommand;
+import com.rolexnetwork.staff.listeners.MenuClickListener;
+import com.rolexnetwork.staff.listeners.StaffToolListener;
 import com.rolexnetwork.staff.managers.StaffManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -16,10 +18,14 @@ public class RolexStaff extends JavaPlugin {
         // אתחול ה-Manager
         this.staffManager = new StaffManager(this);
 
-        // רישום הפקודה
+        // רישום פקודות
         if (getCommand("staff") != null) {
             getCommand("staff").setExecutor(new StaffCommand(staffManager));
         }
+
+        // רישום Listeners
+        getServer().getPluginManager().registerEvents(new StaffToolListener(staffManager), this);
+        getServer().getPluginManager().registerEvents(new MenuClickListener(), this);
 
         getLogger().info("RolexNetWork-Staff Enabled Successfully!");
     }
