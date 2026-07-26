@@ -34,13 +34,19 @@ public class MenuClickListener implements Listener {
             StaffRank staffRank = StaffRank.getRank(staff);
 
             switch (clickedItem.getType()) {
-                case PACKED_ICE: // Freeze
-                    staff.sendMessage(ChatColor.AQUA + "[RolexStaff] שינית את מצב ההקפאה של " + target.getName());
-                    target.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "הוקפאת על ידי איש צוות!");
+                case PACKED_ICE: // הקפאה / ביטול הקפאה
+                    boolean isNowFrozen = RolexStaff.getInstance().getFreezeManager().toggleFreeze(target);
                     
-                    // שליחת לוג לדיסקורד
+                    if (isNowFrozen) {
+                        staff.sendMessage(ChatColor.AQUA + "[RolexStaff] הקפאת את " + target.getName());
+                        target.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "הוקפאת על ידי איש צוות! אל תתנתק!");
+                    } else {
+                        staff.sendMessage(ChatColor.GREEN + "[RolexStaff] ביטלת את ההקפאה של " + target.getName());
+                        target.sendMessage(ChatColor.GREEN + "ההקפאה שלך בוטלה.");
+                    }
+                    
                     RolexStaff.getInstance().getDiscordManager().sendPunishmentLog(
-                        staff.getName(), target.getName(), "FREEZE", "הקפאה לבדיקה"
+                        staff.getName(), target.getName(), isNowFrozen ? "FREEZE" : "UNFREEZE", "שינוי מצב הקפאה דרך ה-GUI"
                     );
                     
                     staff.closeInventory();
@@ -50,7 +56,6 @@ public class MenuClickListener implements Listener {
                     target.kickPlayer(ChatColor.RED + "נזרקת מהשרת על ידי איש צוות (RolexStaff)");
                     staff.sendMessage(ChatColor.GREEN + "[RolexStaff] נזרק מהשרת: " + target.getName());
                     
-                    // שליחת לוג לדיסקורד
                     RolexStaff.getInstance().getDiscordManager().sendPunishmentLog(
                         staff.getName(), target.getName(), "KICK", "הנפה מהשרת דרך RolexStaff GUI"
                     );
@@ -69,7 +74,6 @@ public class MenuClickListener implements Listener {
                         target.kickPlayer(ChatColor.RED + "נחסמת מהשרת על ידי איש צוות!");
                         staff.sendMessage(ChatColor.DARK_RED + "[RolexStaff] השחקן " + target.getName() + " נחסם בהצלחה!");
                         
-                        // שליחת לוג לדיסקורד
                         RolexStaff.getInstance().getDiscordManager().sendPunishmentLog(
                             staff.getName(), target.getName(), "BAN", "חסימה מהשרת דרך RolexStaff GUI"
                         );
