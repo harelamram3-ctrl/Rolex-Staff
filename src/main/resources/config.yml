@@ -1,0 +1,5 @@
+# RolexNetWork-Staff Configuration
+
+discord:
+  bot-token: "YOUR_BOT_TOKEN_HERE"
+  log-channel-id: "YOUR_CHANNEL_ID_HERE"
