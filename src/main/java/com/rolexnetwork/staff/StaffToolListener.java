@@ -1,43 +1,55 @@
-package com.rolexnetwork.staff;
+package com.rolexnetwork.staff.listeners;
 
-import com.rolexnetwork.staff.commands.StaffCommand;
-import com.rolexnetwork.staff.listeners.StaffToolListener;
+import com.rolexnetwork.staff.gui.StaffMenu;
 import com.rolexnetwork.staff.managers.StaffManager;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
-public class RolexStaff extends JavaPlugin {
+public class StaffToolListener implements Listener {
 
-    private static RolexStaff instance;
-    private StaffManager staffManager;
+    private final StaffManager staffManager;
 
-    @Override
-    public void onEnable() {
-        instance = this;
+    public StaffToolListener(StaffManager staffManager) {
+        this.staffManager = staffManager;
+    }
 
-        // אתחול ה-Manager
-        this.staffManager = new StaffManager(this);
+    @EventHandler
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        Player staff = event.getPlayer();
 
-        // רישום פקודות
-        if (getCommand("staff") != null) {
-            getCommand("staff").setExecutor(new StaffCommand(staffManager));
+        // בדיקה אם איש הצוות נמצא ב-Staff Mode
+        if (!staffManager.isInStaffMode(staff)) {
+            return;
         }
 
-        // רישום Listeners
-        getServer().getPluginManager().registerEvents(new StaffToolListener(staffManager), this);
+        // בדיקה שהאינטראקציה היא מול שחקן אחר
+        if (!(event.getRightClicked() instanceof Player)) {
+            return;
+        }
 
-        getLogger().info("RolexNetWork-Staff Enabled Successfully!");
-    }
+        Player target = (Player) event.getRightClicked();
+        ItemStack handItem = staff.getInventory().getItemInMainHand();
 
-    @Override
-    public void onDisable() {
-        getLogger().info("RolexNetWork-Staff Disabled.");
-    }
+        if (handItem == null || handItem.getType() == Material.AIR) {
+            return;
+        }
 
-    public static RolexStaff getInstance() {
-        return instance;
-    }
+        // 1. אולר שוויצרי (Nether Star) - פתיחת תפריט ניהול מהיר
+        if (handItem.getType() == Material.NETHER_STAR) {
+            event.setCancelled(true);
+            StaffMenu.openPlayerMenu(staff, target);
+        }
 
-    public StaffManager getStaffManager() {
-        return staffManager;
+        // 2. כלי הקפאה (Ice) - הקפאת שחקן במקום
+        if (handItem.getType() == Material.ICE) {
+            event.setCancelled(true);
+            staff.sendMessage(ChatColor.AQUA + "[RolexStaff] הקפאת את השחקן: " + ChatColor.WHITE + target.getName());
+            target.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "הוקפאת על ידי איש צוות! אל תתנתק מהשרת!");
+        }
     }
 }
