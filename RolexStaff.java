@@ -1,6 +1,7 @@
 package com.rolexnetwork.staff;
 
 import com.rolexnetwork.staff.commands.StaffCommand;
+import com.rolexnetwork.staff.discord.DiscordManager;
 import com.rolexnetwork.staff.listeners.MenuClickListener;
 import com.rolexnetwork.staff.listeners.StaffToolListener;
 import com.rolexnetwork.staff.managers.StaffManager;
@@ -10,13 +11,21 @@ public class RolexStaff extends JavaPlugin {
 
     private static RolexStaff instance;
     private StaffManager staffManager;
+    private DiscordManager discordManager;
 
     @Override
     public void onEnable() {
         instance = this;
 
-        // אתחול ה-Manager
+        // שמירת config.yml דיפולטיבי אם לא קיים
+        saveDefaultConfig();
+
+        // אתחול Managers
         this.staffManager = new StaffManager(this);
+        
+        String botToken = getConfig().getString("discord.bot-token");
+        String channelId = getConfig().getString("discord.log-channel-id");
+        this.discordManager = new DiscordManager(botToken, channelId);
 
         // רישום פקודות
         if (getCommand("staff") != null) {
@@ -27,11 +36,14 @@ public class RolexStaff extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new StaffToolListener(staffManager), this);
         getServer().getPluginManager().registerEvents(new MenuClickListener(), this);
 
-        getLogger().info("RolexNetWork-Staff Enabled Successfully!");
+        getLogger().info("RolexNetWork-Staff Enabled Successfully! Author: RolexNetWork-badpanda14");
     }
 
     @Override
     public void onDisable() {
+        if (discordManager != null) {
+            discordManager.shutdown();
+        }
         getLogger().info("RolexNetWork-Staff Disabled.");
     }
 
@@ -41,5 +53,9 @@ public class RolexStaff extends JavaPlugin {
 
     public StaffManager getStaffManager() {
         return staffManager;
+    }
+
+    public DiscordManager getDiscordManager() {
+        return discordManager;
     }
 }
