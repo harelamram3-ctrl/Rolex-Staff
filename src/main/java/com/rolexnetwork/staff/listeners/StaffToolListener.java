@@ -1,14 +1,16 @@
 package com.rolexnetwork.staff.listeners;
 
-import com.rolexnetwork.staff.RolexStaff;
 import com.rolexnetwork.staff.managers.StaffManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class StaffToolListener implements Listener {
 
@@ -22,35 +24,43 @@ public class StaffToolListener implements Listener {
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Player staff = event.getPlayer();
 
-        // בדיקה אם איש הצוות נמצא ב-Staff Mode
-        if (!staffManager.isInStaffMode(staff)) {
-            return;
-        }
-
-        // בדיקה שהאינטראקציה היא מול שחקן אחר
-        if (!(event.getRightClicked() instanceof Player)) {
-            return;
-        }
+        if (!staffManager.isStaff(staff)) return;
+        if (!(event.getRightClicked() instanceof Player)) return;
 
         Player target = (Player) event.getRightClicked();
-        ItemStack handItem = staff.getInventory().getItemInMainHand();
 
-        if (handItem == null || handItem.getType() == Material.AIR) {
-            return;
-        }
+        // יצירת תפריט ה-GUI
+        Inventory gui = Bukkit.createInventory(null, 27, ChatColor.DARK_RED + "Staff Menu: " + target.getName());
 
-        // 1. אולר שוויצרי (Nether Star) - פתיחת תפריט מהיר / ניהול
-        if (handItem.getType() == Material.NETHER_STAR) {
-            event.setCancelled(true);
-            staff.sendMessage(ChatColor.GOLD + "[RolexStaff] נפתח תפריט ניהול עבור השחקן: " + ChatColor.WHITE + target.getName());
-            // כאן נפתח בהמשך את ה-GUI של העונשים!
+        // כפתור הקפאה (Quantum Freeze)
+        ItemStack freezeItem = new ItemStack(Material.PACKED_ICE);
+        ItemMeta freezeMeta = freezeItem.getItemMeta();
+        if (freezeMeta != null) {
+            freezeMeta.setDisplayName(ChatColor.AQUA + "Quantum Freeze");
+            freezeItem.setItemMeta(freezeMeta);
         }
+        gui.setItem(11, freezeItem);
 
-        // 2. כלי הקפאה (Ice) - הקפאת שחקן במקום
-        if (handItem.getType() == Material.ICE) {
-            event.setCancelled(true);
-            staff.sendMessage(ChatColor.AQUA + "[RolexStaff] הקפאת את השחקן: " + ChatColor.WHITE + target.getName());
-            target.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "הוקפאת על ידי איש צוות! אל תתנתק מהשרת!");
+        // כפתור צפייה באינוונטרי (Invsee)
+        ItemStack invItem = new ItemStack(Material.CHEST);
+        ItemMeta invMeta = invItem.getItemMeta();
+        if (invMeta != null) {
+            invMeta.setDisplayName(ChatColor.GOLD + "Inspect Inventory");
+            invItem.setItemMeta(invMeta);
         }
+        gui.setItem(13, invItem);
+
+        // כפתור השתגרות (Teleport)
+        ItemStack tpItem = new ItemStack(Material.ENDER_PEARL);
+        ItemMeta tpMeta = tpItem.getItemMeta();
+        if (tpMeta != null) {
+            tpMeta.setDisplayName(ChatColor.GREEN + "Teleport to Player");
+            tpItem.setItemMeta(tpMeta);
+        }
+        gui.setItem(15, tpItem);
+
+        // פתיחת התפריט לשחקן!
+        staff.openInventory(gui);
+        staff.sendMessage(ChatColor.GOLD + "[RolexStaff] " + ChatColor.YELLOW + "נפתח תפריט ניהול עבור השחקן " + target.getName());
     }
 }
