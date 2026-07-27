@@ -1,11 +1,7 @@
 package com.rolexnetwork.staff;
 
-import com.rolexnetwork.staff.commands.StaffCommand;
-import com.rolexnetwork.staff.discord.DiscordManager;
 import com.rolexnetwork.staff.listeners.FreezeListener;
-import com.rolexnetwork.staff.listeners.GraveDiggerListener;
 import com.rolexnetwork.staff.listeners.MenuClickListener;
-import com.rolexnetwork.staff.listeners.MindReadListener;
 import com.rolexnetwork.staff.listeners.StaffToolListener;
 import com.rolexnetwork.staff.managers.FreezeManager;
 import com.rolexnetwork.staff.managers.StaffManager;
@@ -16,44 +12,26 @@ public class RolexStaff extends JavaPlugin {
     private static RolexStaff instance;
     private StaffManager staffManager;
     private FreezeManager freezeManager;
-    private DiscordManager discordManager;
 
     @Override
     public void onEnable() {
         instance = this;
 
-        // שמירת config.yml דיפולטיבי
-        saveDefaultConfig();
-
-        // אתחול Managers
-        this.staffManager = new StaffManager(this);
+        // אתחול ה-Managers
+        this.staffManager = new StaffManager();
         this.freezeManager = new FreezeManager();
-        
-        String botToken = getConfig().getString("discord.bot-token");
-        String channelId = getConfig().getString("discord.log-channel-id");
-        this.discordManager = new DiscordManager(botToken, channelId);
 
-        // רישום פקודות
-        if (getCommand("staff") != null) {
-            getCommand("staff").setExecutor(new StaffCommand(staffManager));
-        }
-
-        // רישום Listeners
+        // רישום ה-Listeners
         getServer().getPluginManager().registerEvents(new StaffToolListener(staffManager), this);
+        getServer().getPluginManager().registerEvents(new FreezeListener(freezeManager), this);
         getServer().getPluginManager().registerEvents(new MenuClickListener(), this);
-        getServer().getPluginManager().registerEvents(new MindReadListener(), this);
-        getServer().getPluginManager().registerEvents(new GraveDiggerListener(), this);
-        getServer().getPluginManager().registerEvents(new FreezeListener(freezeManager), this); // ⬅️ חיבור ההקפאה!
 
-        getLogger().info("RolexNetWork-Staff Enabled Successfully!");
+        getLogger().info("RolexStaff plugin enabled successfully!");
     }
 
     @Override
     public void onDisable() {
-        if (discordManager != null) {
-            discordManager.shutdown();
-        }
-        getLogger().info("RolexNetWork-Staff Disabled.");
+        getLogger().info("RolexStaff plugin disabled.");
     }
 
     public static RolexStaff getInstance() {
@@ -66,9 +44,5 @@ public class RolexStaff extends JavaPlugin {
 
     public FreezeManager getFreezeManager() {
         return freezeManager;
-    }
-
-    public DiscordManager getDiscordManager() {
-        return discordManager;
     }
 }
