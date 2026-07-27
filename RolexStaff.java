@@ -26,12 +26,12 @@ public class RolexStaff extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FreezeListener(freezeManager), this);
         getServer().getPluginManager().registerEvents(new MenuClickListener(), this);
 
-        getLogger().info("RolexStaff enabled!");
+        getLogger().info("RolexStaff plugin enabled successfully!");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("RolexStaff disabled!");
+        getLogger().info("RolexStaff plugin disabled.");
     }
 
     public static RolexStaff getInstance() {
