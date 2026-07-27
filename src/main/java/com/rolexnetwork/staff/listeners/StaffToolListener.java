@@ -25,14 +25,10 @@ public class StaffToolListener implements Listener {
         Player staff = event.getPlayer();
 
         if (!staffManager.isStaff(staff)) return;
-        if (!(event.getRightClicked() instanceof Player)) return;
+        if (!(event.getRightClicked() instanceof Player target)) return;
 
-        Player target = (Player) event.getRightClicked();
-
-        // יצירת תפריט ה-GUI
         Inventory gui = Bukkit.createInventory(null, 27, ChatColor.DARK_RED + "Staff Menu: " + target.getName());
 
-        // כפתור הקפאה (Quantum Freeze)
         ItemStack freezeItem = new ItemStack(Material.PACKED_ICE);
         ItemMeta freezeMeta = freezeItem.getItemMeta();
         if (freezeMeta != null) {
@@ -41,7 +37,6 @@ public class StaffToolListener implements Listener {
         }
         gui.setItem(11, freezeItem);
 
-        // כפתור צפייה באינוונטרי (Invsee)
         ItemStack invItem = new ItemStack(Material.CHEST);
         ItemMeta invMeta = invItem.getItemMeta();
         if (invMeta != null) {
@@ -50,7 +45,6 @@ public class StaffToolListener implements Listener {
         }
         gui.setItem(13, invItem);
 
-        // כפתור השתגרות (Teleport)
         ItemStack tpItem = new ItemStack(Material.ENDER_PEARL);
         ItemMeta tpMeta = tpItem.getItemMeta();
         if (tpMeta != null) {
@@ -59,8 +53,7 @@ public class StaffToolListener implements Listener {
         }
         gui.setItem(15, tpItem);
 
-        // פתיחת התפריט לשחקן!
         staff.openInventory(gui);
-        staff.sendMessage(ChatColor.GOLD + "[RolexStaff] " + ChatColor.YELLOW + "נפתח תפריט ניהול עבור השחקן " + target.getName());
+        staff.sendMessage(ChatColor.GOLD + "[RolexStaff] " + ChatColor.YELLOW + "נפתח תפריט ניהול עבור " + target.getName());
     }
 }
