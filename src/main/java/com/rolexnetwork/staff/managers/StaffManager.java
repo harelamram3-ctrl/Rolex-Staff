@@ -9,8 +9,12 @@ public class StaffManager {
 
     private final Set<UUID> staffModePlayers = new HashSet<>();
 
+    public StaffManager() {
+        // Constructor ללא פרמטרים
+    }
+
     public boolean isStaff(Player player) {
-        return staffModePlayers.contains(player.getUniqueId()) || player.hasPermission("rolexstaff.use");
+        return player.hasPermission("rolexstaff.use") || player.isOp();
     }
 
     public boolean isInStaffMode(Player player) {
