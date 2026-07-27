@@ -1,0 +1,8 @@
+name: RolexNetWork-Staff
+version: 1.0.0
+main: com.rolexnetwork.staff.RolexStaff
+api-version: '1.20'
+commands:
+  staff:
+    description: Toggle staff mode
+    permission: rolexstaff.use
