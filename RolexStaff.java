@@ -17,7 +17,7 @@ public class RolexStaff extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        // אתחול המנהלים
+        // תיקון: יצירת StaffManager ללא פרמטרים בסוגריים
         this.staffManager = new StaffManager();
         this.freezeManager = new FreezeManager();
 
@@ -26,12 +26,12 @@ public class RolexStaff extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FreezeListener(freezeManager), this);
         getServer().getPluginManager().registerEvents(new MenuClickListener(), this);
 
-        getLogger().info("RolexStaff plugin enabled successfully!");
+        getLogger().info("RolexStaff enabled successfully!");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("RolexStaff plugin disabled.");
+        getLogger().info("RolexStaff disabled.");
     }
 
     public static RolexStaff getInstance() {
